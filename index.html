@@ -163,19 +163,19 @@ function compare(player, p1, host, h1, bet) {
     balance -= bet;
     profit -= bet;
     alert(`You Lost!\nPlayer: ${player} (${p1})\nHost: ${host} (${h1})`);
-    hitFrame = 1;
+    hitFrame = 0;
     drawFrame();
   } else if (p1 > h1 && p1 !== 10) {
     balance += bet;
     profit += bet;
     alert(`You Win!\nPlayer: ${player} (${p1})\nHost: ${host} (${h1})`);
-    hitFrame = 1;
+    hitFrame = 0;
     drawFrame();
   } else if (p1 > h1 && p1 === 10) {
     balance += 2 * bet;
     profit += 2 * bet;
     alert(`JACKPOT x3!\nPlayer: ${player} (${p1})\nHost: ${host} (${h1})`);
-    hitFrame = 1;
+    hitFrame = 0;
     drawFrame();
   }
 }
@@ -206,7 +206,7 @@ function startGame() {
 
   setTimeout(() => {
     spinning = false;
-    hitFrame = 1;
+    hitFrame = 0;
     drawFrame();
   }, 2000);
 }
