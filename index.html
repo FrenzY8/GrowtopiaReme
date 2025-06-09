@@ -73,7 +73,7 @@
 </head>
 <body>
 
-<h1>Reme</h1>
+<h1>GT Reme</h1>
 
 <input type="number" id="bet" value="10" min="1" placeholder="Enter bet">
 <button onclick="startGame()">Spin</button>
@@ -206,6 +206,8 @@ function startGame() {
 
   setTimeout(() => {
     spinning = false;
+    hitFrame = 1;
+    drawFrame();
   }, 2000);
 }
 
