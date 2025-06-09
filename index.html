@@ -75,12 +75,11 @@
 
 <h1>GT Reme</h1>
 
-<input type="number" id="bet" value="10" min="1" placeholder="Enter bet">
-<button onclick="startGame()">Spin</button>
-
 <canvas id="gameCanvas" width="300" height="200"></canvas>
 
 <div class="stats">
+  <input type="number" id="bet" value="10" min="1" placeholder="Enter bet">
+  <button onclick="startGame()">Spin</button>
   <p>Balance: <span id="balance">1000</span></p>
   <p>Profit: <span id="profit">0</span></p>
   <p>Rounds Played: <span id="rounds">0</span></p>
@@ -221,6 +220,10 @@ rouletteImg.onload = () => {
   hitImg.onload = () => {
     drawFrame();
   };
+};
+
+window.onload = () => {
+  drawFrame();
 };
 </script>
 
