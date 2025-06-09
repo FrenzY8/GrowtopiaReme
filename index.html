@@ -1,38 +1,86 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GT Reme</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
+      margin: 0;
       background: black;
       color: white;
       font-family: Arial, sans-serif;
       text-align: center;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
+
+    h1 {
+      font-size: 6vw;
+      margin-bottom: 10px;
+    }
+
     canvas {
-      display: block;
-      margin: 20px auto;
       background: black;
       border: 2px solid white;
+      margin: 20px 0;
+      width: 90vw;
+      max-width: 400px;
+      height: auto;
     }
-    button, input {
+
+    input, button {
       padding: 10px;
-      font-size: 16px;
-      margin: 10px;
+      font-size: 4vw;
+      max-width: 200px;
+      width: 80vw;
+      margin: 5px;
+      border-radius: 6px;
+      border: none;
+    }
+
+    button {
+      background: white;
+      color: black;
+      font-weight: bold;
+    }
+
+    .stats {
+      font-size: 4vw;
+      margin-top: 20px;
+    }
+
+    @media (min-width: 768px) {
+      h1 {
+        font-size: 36px;
+      }
+
+      input, button {
+        font-size: 16px;
+      }
+
+      .stats {
+        font-size: 18px;
+      }
     }
   </style>
 </head>
 <body>
 
-<h1>Reme Example</h1>
+<h1>Reme</h1>
 
-<label for="bet">Bet:</label>
-<input type="number" id="bet" value="10" min="1">
-<button onclick="startGame()">Spin!</button>
+<input type="number" id="bet" value="10" min="1" placeholder="Enter bet">
+<button onclick="startGame()">Spin</button>
 
 <canvas id="gameCanvas" width="300" height="200"></canvas>
 
-<div>
+<div class="stats">
   <p>Balance: <span id="balance">1000</span></p>
   <p>Profit: <span id="profit">0</span></p>
   <p>Rounds Played: <span id="rounds">0</span></p>
@@ -115,14 +163,20 @@ function compare(player, p1, host, h1, bet) {
     balance -= bet;
     profit -= bet;
     alert(`You Lost!\nPlayer: ${player} (${p1})\nHost: ${host} (${h1})`);
+    hitFrame = 1;
+    drawFrame();
   } else if (p1 > h1 && p1 !== 10) {
     balance += bet;
     profit += bet;
     alert(`You Win!\nPlayer: ${player} (${p1})\nHost: ${host} (${h1})`);
+    hitFrame = 1;
+    drawFrame();
   } else if (p1 > h1 && p1 === 10) {
     balance += 2 * bet;
     profit += 2 * bet;
     alert(`JACKPOT x3!\nPlayer: ${player} (${p1})\nHost: ${host} (${h1})`);
+    hitFrame = 1;
+    drawFrame();
   }
 }
 
@@ -132,6 +186,7 @@ function startGame() {
     alert("Invalid bet.");
     return;
   }
+
   spinning = true;
   playingEffect = true;
   spinSound.currentTime = 0;
@@ -148,6 +203,7 @@ function startGame() {
     roundsPlayed++;
     updateStats();
   });
+
   setTimeout(() => {
     spinning = false;
   }, 2000);
