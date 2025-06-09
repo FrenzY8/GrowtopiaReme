@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GT Reme</title>
+  <style>
+    body {
+      background: black;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    canvas {
+      display: block;
+      margin: 20px auto;
+      background: black;
+      border: 2px solid white;
+    }
+    button, input {
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Reme Example</h1>
+
+<label for="bet">Bet:</label>
+<input type="number" id="bet" value="10" min="1">
+<button onclick="startGame()">Spin!</button>
+
+<canvas id="gameCanvas" width="300" height="200"></canvas>
+
+<div>
+  <p>Balance: <span id="balance">1000</span></p>
+  <p>Profit: <span id="profit">0</span></p>
+  <p>Rounds Played: <span id="rounds">0</span></p>
+</div>
+
+<audio id="spinSound" src="wheel.wav" preload="auto"></audio>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+const rouletteImg = new Image();
+rouletteImg.src = 'roulette.png';
+const hitImg = new Image();
+hitImg.src = 'hit.png';
+const spinSound = document.getElementById('spinSound');
+
+let rouletteFrame = 0;
+let hitFrame = 0;
+let spinning = false;
+let playingEffect = false;
+let balance = 1000;
+let profit = 0;
+let roundsPlayed = 0;
+
+function drawFrame() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(
+    rouletteImg,
+    rouletteFrame * 32, 0, 32, 32,
+    (canvas.width / 2) - 32, (canvas.height / 2) - 32, 64, 64
+  );
+  if (playingEffect) {
+    ctx.drawImage(
+      hitImg,
+      hitFrame * 32, 0, 32, 32,
+      (canvas.width / 2) - 40, (canvas.height / 2) - 40, 80, 80
+    );
+  }
+}
+
+function animateSpin(callback) {
+  if (!spinning) {
+    callback();
+    return;
+  }
+  rouletteFrame = (rouletteFrame + 1) % 3;
+  drawFrame();
+  setTimeout(() => animateSpin(callback), 100);
+}
+
+function animateHit() {
+  if (!playingEffect) return;
+  drawFrame();
+  hitFrame++;
+  if (hitFrame >= 8) {
+    playingEffect = false;
+    hitFrame = 0;
+    drawFrame();
+    return;
+  }
+  setTimeout(animateHit, 50);
+}
+
+function convert(value) {
+  if ([0, 19, 28].includes(value)) return 10;
+  if ([1, 10, 29].includes(value)) return 1;
+  if ([2, 11, 20].includes(value)) return 2;
+  if ([3, 12, 21, 30].includes(value)) return 3;
+  if ([4, 13, 22, 31].includes(value)) return 4;
+  if ([5, 14, 23, 32].includes(value)) return 5;
+  if ([6, 15, 24, 33].includes(value)) return 6;
+  if ([7, 16, 25, 34].includes(value)) return 7;
+  if ([8, 17, 26, 35].includes(value)) return 8;
+  if ([9, 18, 27, 36].includes(value)) return 9;
+}
+
+function compare(player, p1, host, h1, bet) {
+  if (h1 >= p1) {
+    balance -= bet;
+    profit -= bet;
+    alert(`You Lost!\nPlayer: ${player} (${p1})\nHost: ${host} (${h1})`);
+  } else if (p1 > h1 && p1 !== 10) {
+    balance += bet;
+    profit += bet;
+    alert(`You Win!\nPlayer: ${player} (${p1})\nHost: ${host} (${h1})`);
+  } else if (p1 > h1 && p1 === 10) {
+    balance += 2 * bet;
+    profit += 2 * bet;
+    alert(`JACKPOT x3!\nPlayer: ${player} (${p1})\nHost: ${host} (${h1})`);
+  }
+}
+
+function startGame() {
+  let betAmt = parseInt(document.getElementById('bet').value);
+  if (betAmt <= 0 || betAmt > balance) {
+    alert("Invalid bet.");
+    return;
+  }
+  spinning = true;
+  playingEffect = true;
+  spinSound.currentTime = 0;
+  spinSound.play();
+  animateHit();
+  animateSpin(() => {
+    rouletteFrame = 3;
+    drawFrame();
+    let player = Math.floor(Math.random() * 37);
+    let host = Math.floor(Math.random() * 37);
+    let p1 = convert(player);
+    let h1 = convert(host);
+    compare(player, p1, host, h1, betAmt);
+    roundsPlayed++;
+    updateStats();
+  });
+  setTimeout(() => {
+    spinning = false;
+  }, 2000);
+}
+
+function updateStats() {
+  document.getElementById('balance').textContent = balance;
+  document.getElementById('profit').textContent = profit;
+  document.getElementById('rounds').textContent = roundsPlayed;
+}
+
+rouletteImg.onload = () => {
+  hitImg.onload = () => {
+    drawFrame();
+  };
+};
+</script>
+
+</body>
+</html>
